@@ -4,7 +4,7 @@ var path = require('path');
 var async = require('async');
 var spawn = require('child_process').spawn;
 
-var DashdRPC = require('@dashevo/dashd-rpc');
+var DashdRPC = require('@dashevo/butd-rpc');
 var rimraf = require('rimraf');
 var dashcore = require('@dashevo/dashcore-lib');
 var chai = require('chai');
@@ -19,7 +19,7 @@ var DashService = index.services.Dash;
 describe('Dash Cluster', function() {
   var node;
   var daemons = [];
-  var execPath = path.resolve(__dirname, process.env.HOME, './.dashcore/data/dashd')
+  var execPath = path.resolve(__dirname, process.env.HOME, './.dashcore/data/butd')
   var nodesConf = [
     {
       datadir: path.resolve(__dirname, './data/node1'),
@@ -51,7 +51,7 @@ describe('Dash Cluster', function() {
   ];
 
   before(function(done) {
-    log.info('Starting 3 dashd daemons');
+    log.info('Starting 3 butd daemons');
     this.timeout(200000);
     async.each(nodesConf, function(nodeConf, next) {
       var opts = [
@@ -96,13 +96,13 @@ describe('Dash Cluster', function() {
     }, 1000);
   });
 
-  it('step 1: will connect to three dashd daemons', function(done) {
+  it('step 1: will connect to three butd daemons', function(done) {
     this.timeout(20000);
     var configuration = {
       network: 'regtest',
       services: [
         {
-          name: 'dashd',
+          name: 'butd',
           module: DashService,
           config: {
             connect: [
@@ -156,7 +156,7 @@ describe('Dash Cluster', function() {
 
   it('step 2: receive block events', function(done) {
     this.timeout(10000);
-    node.services.dashd.once('tip', function(height) {
+    node.services.butd.once('tip', function(height) {
       height.should.equal(1);
       done();
     });

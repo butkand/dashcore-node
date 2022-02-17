@@ -118,7 +118,7 @@ describe('#start', function() {
         return internal;
       };
       var config = {
-        services: ['dashd']
+        services: ['butd']
       };
       (function() {
         setupServices(testRequire, cwd, config);

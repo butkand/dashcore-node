@@ -15,13 +15,13 @@ var Transaction = dashcore.Transaction;
 var BN = dashcore.crypto.BN;
 var async = require('async');
 var rimraf = require('rimraf');
-var dashd;
+var butd;
 
 /* jshint unused: false */
 var should = chai.should();
 var assert = chai.assert;
 var sinon = require('sinon');
-var DashdRPC = require('@dashevo/dashd-rpc');
+var DashdRPC = require('@dashevo/butd-rpc');
 var transactionData = [];
 var blockHashes = [];
 var txs = [];
@@ -49,23 +49,23 @@ describe('P2P Functionality', function() {
         throw err;
       }
 
-      dashd = require('../').services.Dash({
+      butd = require('../').services.Dash({
         spawn: {
           datadir: datadir,
-          exec: path.resolve(__dirname, process.env.HOME, './.dashcore/data/dashd')
+          exec: path.resolve(__dirname, process.env.HOME, './.dashcore/data/butd')
         },
         node: {
           network: dashcore.Networks.testnet
         }
       });
 
-      dashd.on('error', function(err) {
+      butd.on('error', function(err) {
         log.error('error="%s"', err.message);
       });
 
       log.info('Waiting for Dash Core to initialize...');
 
-      dashd.start(function(err) {
+      butd.start(function(err) {
         if (err) {
           throw err;
         }
@@ -163,8 +163,8 @@ describe('P2P Functionality', function() {
     this.timeout(20000);
     peer.on('disconnect', function() {
       log.info('Peer disconnected');
-      dashd.node.stopping = true;
-      dashd.stop(function(err, result) {
+      butd.node.stopping = true;
+      butd.stop(function(err, result) {
         done();
       });
     });
@@ -176,7 +176,7 @@ describe('P2P Functionality', function() {
 
     var usedTxs = {};
 
-    dashd.on('tx', function(buffer) {
+    butd.on('tx', function(buffer) {
       var txFromResult = new Transaction().fromBuffer(buffer);
       var tx = usedTxs[txFromResult.id];
       should.exist(tx);

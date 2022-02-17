@@ -1,7 +1,7 @@
 'use strict';
 
 var benchmark = require('benchmark');
-var dashdRPC = require('@dashevo/dashd-rpc');
+var butdRPC = require('@dashevo/butd-rpc');
 var async = require('async');
 var maxTime = 20;
 
@@ -26,7 +26,7 @@ var fixtureData = {
   ]
 };
 
-var dashd = require('../').services.Dash({
+var butd = require('../').services.Dash({
   node: {
     datadir: process.env.HOME + '/.dash',
     network: {
@@ -35,22 +35,22 @@ var dashd = require('../').services.Dash({
   }
 });
 
-dashd.on('error', function(err) {
+butd.on('error', function(err) {
   console.error(err.message);
 });
 
-dashd.start(function(err) {
+butd.start(function(err) {
   if (err) {
     throw err;
   }
   console.log('Dash Core started');
 });
 
-dashd.on('ready', function() {
+butd.on('ready', function() {
 
   console.log('Dash Core ready');
 
-  var client = new dashdRPC({
+  var client = new butdRPC({
     host: 'localhost',
     port: 18332,
     user: 'dash',
@@ -64,12 +64,12 @@ dashd.on('ready', function() {
       var hashesLength = fixtureData.blockHashes.length;
       var txLength = fixtureData.txHashes.length;
 
-      function dashdGetBlockNative(deffered) {
+      function butdGetBlockNative(deffered) {
         if (c >= hashesLength) {
           c = 0;
         }
         var hash = fixtureData.blockHashes[c];
-        dashd.getBlock(hash, function(err, block) {
+        butd.getBlock(hash, function(err, block) {
           if (err) {
             throw err;
           }
@@ -78,7 +78,7 @@ dashd.on('ready', function() {
         c++;
       }
 
-      function dashdGetBlockJsonRpc(deffered) {
+      function butdGetBlockJsonRpc(deffered) {
         if (c >= hashesLength) {
           c = 0;
         }
@@ -97,7 +97,7 @@ dashd.on('ready', function() {
           c = 0;
         }
         var hash = fixtureData.txHashes[c];
-        dashd.getTransaction(hash, true, function(err, tx) {
+        butd.getTransaction(hash, true, function(err, tx) {
           if (err) {
             throw err;
           }
@@ -122,22 +122,22 @@ dashd.on('ready', function() {
 
       var suite = new benchmark.Suite();
 
-      suite.add('dashd getblock (native)', dashdGetBlockNative, {
+      suite.add('butd getblock (native)', butdGetBlockNative, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('dashd getblock (json rpc)', dashdGetBlockJsonRpc, {
+      suite.add('butd getblock (json rpc)', butdGetBlockJsonRpc, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('dashd gettransaction (native)', dashGetTransactionNative, {
+      suite.add('butd gettransaction (native)', dashGetTransactionNative, {
         defer: true,
         maxTime: maxTime
       });
 
-      suite.add('dashd gettransaction (json rpc)', dashGetTransactionJsonRpc, {
+      suite.add('butd gettransaction (json rpc)', dashGetTransactionJsonRpc, {
         defer: true,
         maxTime: maxTime
       });
@@ -158,7 +158,7 @@ dashd.on('ready', function() {
       throw err;
     }
     console.log('Finished');
-    dashd.stop(function(err) {
+    butd.stop(function(err) {
       if (err) {
         console.error('Fail to stop services: ' + err);
         process.exit(1);

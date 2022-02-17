@@ -1,6 +1,6 @@
 'use strict';
 
-// To run the tests: $ mocha -R spec regtest/dashd.js
+// To run the tests: $ mocha -R spec regtest/butd.js
 
 var path = require('path');
 var index = require('..');
@@ -11,13 +11,13 @@ var dashcore = require('@dashevo/dashcore-lib');
 var BN = dashcore.crypto.BN;
 var async = require('async');
 var rimraf = require('rimraf');
-var dashd;
+var butd;
 
 /* jshint unused: false */
 var should = chai.should();
 var assert = chai.assert;
 var sinon = require('sinon');
-var DashdRPC = require('@dashevo/dashd-rpc');
+var DashdRPC = require('@dashevo/butd-rpc');
 var transactionData = [];
 var blockHashes = [];
 var utxos;
@@ -43,10 +43,10 @@ describe('Dashd Functionality', function() {
         throw err;
       }
 
-      dashd = require('../').services.Dash({
+      butd = require('../').services.Dash({
         spawn: {
           datadir: datadir,
-          exec: path.resolve(__dirname, process.env.HOME, './.dashcore/data/dashd')
+          exec: path.resolve(__dirname, process.env.HOME, './.dashcore/data/butd')
         },
         node: {
           network: regtestNetwork,
@@ -56,13 +56,13 @@ describe('Dashd Functionality', function() {
         }
       });
 
-      dashd.on('error', function(err) {
+      butd.on('error', function(err) {
         log.error('error="%s"', err.message);
       });
 
       log.info('Waiting for Dash Core to initialize...');
 
-      dashd.start(function() {
+      butd.start(function() {
         log.info('Dashd started');
 
         client = new DashdRPC({
@@ -131,8 +131,8 @@ describe('Dashd Functionality', function() {
 
   after(function(done) {
     this.timeout(60000);
-    dashd.node.stopping = true;
-    dashd.stop(function(err, result) {
+    butd.node.stopping = true;
+    butd.stop(function(err, result) {
       done();
     });
   });
@@ -141,7 +141,7 @@ describe('Dashd Functionality', function() {
 
     [0,1,2,3,5,6,7,8,9].forEach(function(i) {
       it('generated block ' + i, function(done) {
-        dashd.getBlock(blockHashes[i], function(err, block) {
+        butd.getBlock(blockHashes[i], function(err, block) {
           if (err) {
             throw err;
           }
@@ -156,7 +156,7 @@ describe('Dashd Functionality', function() {
   describe('get blocks as buffers', function() {
     [0,1,2,3,5,6,7,8,9].forEach(function(i) {
       it('generated block ' + i, function(done) {
-        dashd.getRawBlock(blockHashes[i], function(err, block) {
+        butd.getRawBlock(blockHashes[i], function(err, block) {
           if (err) {
             throw err;
           }
@@ -170,8 +170,8 @@ describe('Dashd Functionality', function() {
 
   describe('get errors as error instances', function() {
     it('will wrap an rpc into a javascript error', function(done) {
-      dashd.client.getBlock(1000000000, function(err, response) {
-        var error = dashd._wrapRPCError(err);
+      butd.client.getBlock(1000000000, function(err, response) {
+        var error = butd._wrapRPCError(err);
         (error instanceof Error).should.equal(true);
         error.message.should.equal(err.message);
         error.code.should.equal(err.code);
@@ -187,7 +187,7 @@ describe('Dashd Functionality', function() {
       it('generated block ' + i, function(done) {
         // add the genesis block
         var height = i + 1;
-        dashd.getBlock(i + 1, function(err, block) {
+        butd.getBlock(i + 1, function(err, block) {
           if (err) {
             throw err;
           }
@@ -199,7 +199,7 @@ describe('Dashd Functionality', function() {
     });
 
     it('will get error with number greater than tip', function(done) {
-      dashd.getBlock(1000000000, function(err, response) {
+      butd.getBlock(1000000000, function(err, response) {
         should.exist(err);
         err.code.should.equal(-8);
         done();
@@ -214,7 +214,7 @@ describe('Dashd Functionality', function() {
         var txhex = transactionData[i];
         var tx = new dashcore.Transaction();
         tx.fromString(txhex);
-        dashd.getTransaction(tx.hash, function(err, response) {
+        butd.getTransaction(tx.hash, function(err, response) {
           if (err) {
             throw err;
           }
@@ -226,7 +226,7 @@ describe('Dashd Functionality', function() {
 
     it('will return error if the transaction does not exist', function(done) {
       var txid = '6226c407d0e9705bdd7158e60983e37d0f5d23529086d6672b07d9238d5aa618';
-      dashd.getTransaction(txid, function(err, response) {
+      butd.getTransaction(txid, function(err, response) {
         should.exist(err);
         done();
       });
@@ -239,7 +239,7 @@ describe('Dashd Functionality', function() {
         var txhex = transactionData[i];
         var tx = new dashcore.Transaction();
         tx.fromString(txhex);
-        dashd.getRawTransaction(tx.hash, function(err, response) {
+        butd.getRawTransaction(tx.hash, function(err, response) {
           if (err) {
             throw err;
           }
@@ -252,7 +252,7 @@ describe('Dashd Functionality', function() {
 
     it('will return error if the transaction does not exist', function(done) {
       var txid = '6226c407d0e9705bdd7158e60983e37d0f5d23529086d6672b07d9238d5aa618';
-      dashd.getRawTransaction(txid, function(err, response) {
+      butd.getRawTransaction(txid, function(err, response) {
         should.exist(err);
         done();
       });
@@ -263,7 +263,7 @@ describe('Dashd Functionality', function() {
     var expectedWork = new BN(6);
     [1,2,3,4,5,6,7,8,9].forEach(function(i) {
       it('generate block ' + i, function(done) {
-        dashd.getBlockHeader(blockHashes[i], function(err, blockIndex) {
+        butd.getBlockHeader(blockHashes[i], function(err, blockIndex) {
           if (err) {
             return done(err);
           }
@@ -281,7 +281,7 @@ describe('Dashd Functionality', function() {
       });
     });
     it('will get null prevHash for the genesis block', function(done) {
-      dashd.getBlockHeader(0, function(err, header) {
+      butd.getBlockHeader(0, function(err, header) {
         if (err) {
           return done(err);
         }
@@ -291,7 +291,7 @@ describe('Dashd Functionality', function() {
       });
     });
     it('will get error for block not found', function(done) {
-      dashd.getBlockHeader('notahash', function(err, header) {
+      butd.getBlockHeader('notahash', function(err, header) {
         should.exist(err);
         done();
       });
@@ -302,7 +302,7 @@ describe('Dashd Functionality', function() {
     var expectedWork = new BN(6);
     [2,3,4,5,6,7,8,9].forEach(function(i) {
       it('generate block ' + i, function() {
-        dashd.getBlockHeader(i, function(err, header) {
+        butd.getBlockHeader(i, function(err, header) {
           should.exist(header);
           should.exist(header.chainWork);
           var work = new BN(header.chainWork, 'hex');
@@ -316,7 +316,7 @@ describe('Dashd Functionality', function() {
       });
     });
     it('will get error with number greater than tip', function(done) {
-      dashd.getBlockHeader(100000, function(err, header) {
+      butd.getBlockHeader(100000, function(err, header) {
         should.exist(err);
         done();
       });
@@ -335,7 +335,7 @@ describe('Dashd Functionality', function() {
       tx.sign(dashcore.PrivateKey.fromWIF(utxos[0].privateKeyWIF));
 
       // test sending the transaction
-      dashd.sendTransaction(tx.serialize(), function(err, hash) {
+      butd.sendTransaction(tx.serialize(), function(err, hash) {
         if (err) {
           return done(err);
         }
@@ -350,7 +350,7 @@ describe('Dashd Functionality', function() {
       tx.from(utxos[1]);
       tx.change(privateKey.toAddress());
       tx.to(destKey.toAddress(), utxos[1].amount * 1e8 - 1000);
-      dashd.sendTransaction(tx.uncheckedSerialize(), function(err, hash) {
+      butd.sendTransaction(tx.uncheckedSerialize(), function(err, hash) {
         should.exist(err);
         (err instanceof Error).should.equal(true);
         should.not.exist(hash);
@@ -360,11 +360,11 @@ describe('Dashd Functionality', function() {
 
     it('will throw an error for unexpected types (tx decode failed)', function(done) {
       var garbage = new Buffer('abcdef', 'hex');
-      dashd.sendTransaction(garbage, function(err, hash) {
+      butd.sendTransaction(garbage, function(err, hash) {
         should.exist(err);
         should.not.exist(hash);
         var num = 23;
-        dashd.sendTransaction(num, function(err, hash) {
+        butd.sendTransaction(num, function(err, hash) {
           should.exist(err);
           (err instanceof Error).should.equal(true);
           should.not.exist(hash);
@@ -382,11 +382,11 @@ describe('Dashd Functionality', function() {
 
       var serialized = tx.serialize();
 
-      dashd.once('tx', function(buffer) {
+      butd.once('tx', function(buffer) {
         buffer.toString('hex').should.equal(serialized);
         done();
       });
-      dashd.sendTransaction(serialized, function(err, hash) {
+      butd.sendTransaction(serialized, function(err, hash) {
         if (err) {
           return done(err);
         }
@@ -398,7 +398,7 @@ describe('Dashd Functionality', function() {
 
   describe('fee estimation', function() {
     it('will estimate fees', function(done) {
-      dashd.estimateFee(1, function(err, fees) {
+      butd.estimateFee(1, function(err, fees) {
         if (err) {
           return done(err);
         }
@@ -411,7 +411,7 @@ describe('Dashd Functionality', function() {
   describe('tip updates', function() {
     it('will get an event when the tip is new', function(done) {
       this.timeout(4000);
-      dashd.on('tip', function(height) {
+      butd.on('tip', function(height) {
         if (height === 151) {
           done();
         }
@@ -426,7 +426,7 @@ describe('Dashd Functionality', function() {
 
   describe('get detailed transaction', function() {
     it('should include details for coinbase tx', function(done) {
-      dashd.getDetailedTransaction(utxos[0].txid, function(err, tx) {
+      butd.getDetailedTransaction(utxos[0].txid, function(err, tx) {
         if (err) {
           return done(err);
         }
@@ -464,7 +464,7 @@ describe('Dashd Functionality', function() {
 
   describe('#getInfo', function() {
     it('will get information', function(done) {
-      dashd.getInfo(function(err, info) {
+      butd.getInfo(function(err, info) {
         if (err) {
           return done(err);
         }

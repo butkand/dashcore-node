@@ -6,18 +6,18 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
 describe('#defaultConfig', function() {
-  var expectedExecPath = path.resolve(__dirname, process.env.HOME, './.dashcore/data/dashd');
+  var expectedExecPath = path.resolve(__dirname, process.env.HOME, './.dashcore/data/butd');
 
   it('will return expected configuration', function() {
     var config = JSON.stringify({
       network: 'livenet',
       port: 3001,
       services: [
-        'dashd',
+        'butd',
         'web'
       ],
       servicesConfig: {
-        dashd: {
+        butd: {
           connect: [{
             rpchost: '127.0.0.1',
             rpcport: 9998,
@@ -48,22 +48,22 @@ describe('#defaultConfig', function() {
     info.path.should.equal(home + '/.dashcore');
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
-    info.config.services.should.deep.equal(['dashd', 'web']);
-    var dashd = info.config.servicesConfig.dashd;
-    should.exist(dashd);
+    info.config.services.should.deep.equal(['butd', 'web']);
+    var butd = info.config.servicesConfig.butd;
+    should.exist(butd);
   });
   it('will include additional services', function() {
     var config = JSON.stringify({
       network: 'livenet',
       port: 3001,
       services: [
-        'dashd',
+        'butd',
         'web',
         'insight-api',
         'insight-ui'
       ],
       servicesConfig: {
-        dashd: {
+        butd: {
           connect: [{
             rpchost: '127.0.0.1',
             rpcport: 9998,
@@ -97,12 +97,12 @@ describe('#defaultConfig', function() {
     info.config.network.should.equal('livenet');
     info.config.port.should.equal(3001);
     info.config.services.should.deep.equal([
-      'dashd',
+      'butd',
       'web',
       'insight-api',
       'insight-ui'
     ]);
-    var dashd = info.config.servicesConfig.dashd;
-    should.exist(dashd);
+    var butd = info.config.servicesConfig.butd;
+    should.exist(butd);
   });
 });
