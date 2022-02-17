@@ -47,7 +47,7 @@
   ],
   "dependencies": {
     "@dashevo/dashcore-lib": "git+https://github.com/butkand/dashcore-lib.git",
-    "@dashevo/butd-rpc": "git+https://github.com/butkand/butd-rpc.git",
+    "@dashevo/butd-rpc": "git+https://github.com/butkand/butd-rpc.git#butk",
     "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "colors": "^1.3.3",
