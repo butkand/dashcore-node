@@ -46,8 +46,8 @@
     "butd"
   ],
   "dependencies": {
-    "@dashevo/dashcore-lib": "https://github.com/butkand/dashcore-lib",
-    "@dashevo/butd-rpc": "https://github.com/butkand/butd-rpc",
+    "@dashevo/dashcore-lib": "git+https://github.com/butkand/dashcore-lib.git",
+    "@dashevo/butd-rpc": "git+https://github.com/butkand/butd-rpc.git",
     "async": "^2.6.1",
     "body-parser": "^1.18.3",
     "colors": "^1.3.3",
@@ -68,7 +68,7 @@
     "utf-8-validate": "~5.0.2"
   },
   "devDependencies": {
-    "@dashevo/dashcore-p2p": "^1.1.9",
+    "@dashevo/dashcore-p2p": "git+https://github.com/butkand/dashcore-p2p.git",
     "benchmark": "2.1.4",
     "chai": "^4.2.0",
     "coveralls": "^3.0.2",
